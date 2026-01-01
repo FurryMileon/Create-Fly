@@ -88,10 +88,8 @@ public class ElevatorPulleyBlockEntity extends PulleyBlockEntity {
         if (!wasArrived && !level.isClientSide()) {
             triggerContact(ec, targetLevel - ec.contactYOffset);
             AllSoundEvents.CONTRAPTION_DISASSEMBLE.play(level, null, worldPosition.below((int) offset), 0.75f, 0.8f);
-        }
 
-        // Only adjust position on server to prevent client-server desync
-        if (!level.isClientSide()) {
+            // Adjust position only once when arriving to prevent client-server desync
             double diff = targetLevel - y - ec.contactYOffset;
             if (Math.abs(diff) > 1f / 128)
                 diff *= 0.25f;

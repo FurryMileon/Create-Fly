@@ -54,6 +54,9 @@ public class ControlledContraptionEntity extends AbstractContraptionEntity {
 
     @Override
     public Vec3 getContactPointMotion(Vec3 globalContactPoint) {
+        // Elevators should not use simple delta movement due to frequent direction changes
+        if (contraption instanceof com.zurrtum.create.content.contraptions.elevator.ElevatorContraption)
+            return super.getContactPointMotion(globalContactPoint);
         if (contraption instanceof TranslatingContraption)
             return getDeltaMovement();
         return super.getContactPointMotion(globalContactPoint);

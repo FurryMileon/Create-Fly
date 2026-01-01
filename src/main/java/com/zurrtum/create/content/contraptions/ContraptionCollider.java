@@ -308,7 +308,12 @@ public class ContraptionCollider {
                 }
                 contactPointMotion = contraptionEntity.getContactPointMotion(entityPosition);
                 allowedMovement = collide(contactPointMotion, entity);
-                entity.setPos(entityPosition.x + allowedMovement.x, entityPosition.y, entityPosition.z + allowedMovement.z);
+                // Elevators need Y movement applied, otherwise entities fall through
+                boolean isElevator = contraption instanceof com.zurrtum.create.content.contraptions.elevator.ElevatorContraption;
+                if (isElevator)
+                    entity.setPos(entityPosition.x + allowedMovement.x, entityPosition.y + allowedMovement.y, entityPosition.z + allowedMovement.z);
+                else
+                    entity.setPos(entityPosition.x + allowedMovement.x, entityPosition.y, entityPosition.z + allowedMovement.z);
             }
             entity.setDeltaMovement(entityMotion);
         }

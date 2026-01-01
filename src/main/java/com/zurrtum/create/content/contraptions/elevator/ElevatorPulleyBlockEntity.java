@@ -90,10 +90,13 @@ public class ElevatorPulleyBlockEntity extends PulleyBlockEntity {
             AllSoundEvents.CONTRAPTION_DISASSEMBLE.play(level, null, worldPosition.below((int) offset), 0.75f, 0.8f);
         }
 
-        double diff = targetLevel - y - ec.contactYOffset;
-        if (Math.abs(diff) > 1f / 128)
-            diff *= 0.25f;
-        movedContraption.setPos(movedContraption.position().add(0, diff, 0));
+        // Only adjust position on server to prevent client-server desync
+        if (!level.isClientSide()) {
+            double diff = targetLevel - y - ec.contactYOffset;
+            if (Math.abs(diff) > 1f / 128)
+                diff *= 0.25f;
+            movedContraption.setPos(movedContraption.position().add(0, diff, 0));
+        }
     }
 
     @Override

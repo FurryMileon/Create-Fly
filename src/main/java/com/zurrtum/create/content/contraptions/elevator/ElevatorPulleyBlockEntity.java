@@ -74,6 +74,12 @@ public class ElevatorPulleyBlockEntity extends PulleyBlockEntity {
         waitingForSpeedChange = false;
         ec.arrived = wasArrived;
 
+        // Force sync contraption position every 5 ticks to prevent drift
+        if (!level.isClientSide() && movedContraption != null && tickCount % 5 == 0) {
+            forceMove = true;
+            sendData();
+        }
+
         if (!arrived)
             return;
 
@@ -94,6 +100,11 @@ public class ElevatorPulleyBlockEntity extends PulleyBlockEntity {
     @Override
     public void lazyTick() {
         super.lazyTick();
+
+        // Sync position more frequently to prevent desync
+        if (!level.isClientSide() && movedContraption != null && running)
+            sendData();
+
         if (level.isClientSide() || !arrived)
             return;
         if (movedContraption == null || !movedContraption.isAlive())
@@ -171,15 +182,13 @@ public class ElevatorPulleyBlockEntity extends PulleyBlockEntity {
         speed = Mth.clamp(speed, prevSpeed - configacc, prevSpeed + configacc);
         speed = Mth.clamp(speed, -decelleration, decelleration);
 
-        arrived = Math.abs(diff) < 0.5f;
+        // Smaller threshold for more precise stopping
+        arrived = Math.abs(diff) < 0.1f;
 
         if (speed > 1 / 1024f && !level.isClientSide())
             setChanged();
 
-        prevSpeed = speed;
-
-        // Add client interpolation to prevent desync
-        return speed + clientOffsetDiff / 2f;
+        return prevSpeed = speed;
     }
 
     @Override

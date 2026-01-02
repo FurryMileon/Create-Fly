@@ -176,7 +176,10 @@ public class ElevatorPulleyBlockEntity extends PulleyBlockEntity {
         if (speed > 1 / 1024f && !level.isClientSide())
             setChanged();
 
-        return prevSpeed = speed;
+        prevSpeed = speed;
+
+        // Add client interpolation to prevent desync
+        return speed + clientOffsetDiff / 2f;
     }
 
     @Override
